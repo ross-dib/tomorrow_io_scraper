@@ -6,8 +6,11 @@ name = "pypi"
 [packages]
 requests = "*"
 jupyter = "*"
-psycopg = "*"
-
+pydantic = "*"
 
 [dev-packages]
 pytest = "*"
+setuptools = "*"
+
+[requires]
+python_version = "3.12"
