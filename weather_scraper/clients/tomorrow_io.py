@@ -54,9 +54,7 @@ class TomorrowIOClient:
             ["25.9400", "-97.4400"]
         ]
 
-        self.logger.info("Sending requests to tomorrow.io")
         raw_data = self._get_data_and_format(timesteps, fields, start_time, end_time, locations)
-        self.logger.info("Validating responses from tomorrow.io")
         validated_data = self._parse_and_validate_data(raw_data)
         return validated_data
 
@@ -87,6 +85,7 @@ class TomorrowIOClient:
                 "startTime": start_time,
                 "endTime": end_time,
             }
+            print(payload)
 
             try:
                 response = self._session.post(url, json=payload, headers=headers)
@@ -107,11 +106,12 @@ class TomorrowIOClient:
                 for interval in weather_intervals:
                     interval["latitude"] = location[0]
                     interval["longitude"] = location[1]
+                print(weather_intervals[0])
                 historical_weather_list.append(weather_intervals)
             finally:
                 time.sleep(0.5) # tomorrow.io's free plan rate limits at >3 TPS
 
-            return historical_weather_list
+        return historical_weather_list
 
     def _parse_and_validate_data(self, data: list) -> list:
         '''
