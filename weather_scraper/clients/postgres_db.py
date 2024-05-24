@@ -53,7 +53,6 @@ class PostrgresClient:
                     VALUES %s
                     """
 
-
         unpacked_data = [unload_model_to_tuple(item) for item in data]
         execute_values(self.conn.cursor(), insert_query, unpacked_data)
         self.conn.commit()
