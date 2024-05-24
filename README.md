@@ -17,23 +17,27 @@ docker compose up --build
 ## Development
 1. Install [Docker](https://docs.docker.com/get-docker/)
 2. Install [postrgeSQL](https://www.postgresql.org/download/)
-3. Create local postgreSQL DB and table:
+3. Install [Python 3.12](https://www.python.org/downloads/release/python-3120/)
+4. Install [pipenv](https://pipenv.pypa.io/en/latest/installation.html)
+   5. Once installed, run the following: ```pipenv install --dev```
+6. Create local postgreSQL DB and table:
 ```
 createdb <INSERT DB NAME>
 psql <INSERT DB NAME>
 ```
 - this will bring you to an interactive postgres session. Copy the commands from [scripts/init-db.sql](https://github.com/ross-dib/tomorrow_io_scraper/blob/main/scripts/init-db.sql) and run them in the shell
-4. Get an API key from [tomorrow.io](https://app.tomorrow.io/home) (free-tier will suffice) and set it as an environment variable: 
+7Get an API key from [tomorrow.io](https://app.tomorrow.io/home) (free-tier will suffice) and set it as an environment variable: 
 ```
 export TOMORROW_API_KEY=<INSERT KEY>
 ```
-5. You can now run the app locally and see results in the psql session
+8You can now run the app locally and see results in the psql session
 ```
 python -m weather_scraper
 ```
 
 ### Testing
-
+1. Follow steps in development above
+2. Run ```pipenv run python -m pytest --junit-xml=junit_xml_test_report.xml --cov-branch --cov weather_scraper/ tests``` for unit tests with coverage
 
 
 
