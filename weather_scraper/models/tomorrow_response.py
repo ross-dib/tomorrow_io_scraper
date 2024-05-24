@@ -14,8 +14,8 @@ class TomorrowIOTimelineData(BaseModel):
     precipitation_intensity: float = Field(alias='precipitationIntensity', default=None) # example val: 0
     precipitation_probability: float = Field(alias='precipitationProbability', default=None) # example val: 0
     precipitation_type: int = Field(alias='precipitationType', default=None) # example val: 0
-    temperature: float = Field(default=None)# example val: 16.88
-    temperature_apparent: float = Field(alias='temperatureApparent', default=None) # example val: 16.88
+    temperature_c: float = Field(alias='temperature', default=None)# example val: 16.88
+    temperature_apparent_c: float = Field(alias='temperatureApparent', default=None) # example val: 16.88
     uv_index: float = Field(alias='uvIndex', default=None) # example val: 2
     wind_direction: float = Field(alias='windDirection', default=None) # example val: 218
     wind_gust: float = Field(alias='windGust', default=None) # example val: 5.31
