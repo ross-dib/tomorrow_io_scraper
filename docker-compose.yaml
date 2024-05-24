@@ -3,13 +3,13 @@ version: '3'
 services:
 
   postgres:
-    image: 'postgres:16.2@sha256:6b841c8f6a819884207402f1209a8116844365df15fca8cf556fc54a24c70800'
+    image: 'postgres'
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tomorrow
+      POSTGRES_USER: &db_user postgres
+      POSTGRES_PASSWORD: &db_pw postgres
+      POSTGRES_DB: &db_name local_dev
     volumes:
       - "${PWD}/scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql"
       - "pgdata:/var/lib/postgresql/data"
@@ -23,13 +23,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python -m tomorrow
+    command: python -m weather_scraper
     environment:
-      PGHOST: postgres
-      PGPORT: 5432
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      PGDATABASE: tomorrow
+      PGHOST: &db_host postgres
+      PGPORT: &db_port 5432
+      PGUSER: *db_user
+      PGPASSWORD: *db_pw
+      PGDATABASE: *db_name
+      LOG_LEVEL: DEBUG
+      TOMORROW_API_KEY: ${TOMORROW_API_KEY}
     volumes:
       - "${PWD}/blobs:/tmp/blobs"
     depends_on:
@@ -44,13 +46,13 @@ services:
     ports:
       - "8888:8888"
     environment:
-      PGHOST: postgres
-      PGPORT: 5432
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      PGDATABASE: tomorrow
+      PGHOST: *db_host
+      PGPORT: *db_port
+      PGUSER: *db_user
+      PGPASSWORD: *db_pw
+      PGDATABASE: *db_name
     volumes:
-      - "${PWD}/analysis.ipynb:/app/analysis.ipynb"
+      - "${PWD}/tomorrow_io_analysis.ipynb:/app/tomorrow_io_analysis.ipynb"
     depends_on:
       postgres:
         condition: service_healthy
