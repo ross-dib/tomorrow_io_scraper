@@ -38,7 +38,7 @@ class TomorrowIOClient:
     def _get_data_and_format(self) -> list:
         '''
         Sends an POST request to tomorrow.io Timeline API and
-        correlates location data with
+        correlates location data with weather data
         :return: list of responses from tomorrow.io Timeline API
         '''
 
