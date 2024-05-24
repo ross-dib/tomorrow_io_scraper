@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS tomorrow_io_timeline_data;
 CREATE TABLE IF NOT EXISTS tomorrow_io_timeline_data (
                     start_time TIMESTAMP,
                     latitude FLOAT,
