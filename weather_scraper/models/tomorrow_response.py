@@ -1,10 +1,11 @@
 """
-Data models weather data response from clients.io
+Data validation model for weather data response from tomorrow.io
 using Pydantic models --> https://docs.pydantic.dev/latest/concepts/models/
 """
 from pydantic import BaseModel, Field, field_validator, ValidationError
 import datetime
 from datetime import datetime as datetime_cls
+import itertools
 
 
 class TomorrowIOTimelineData(BaseModel):
@@ -30,7 +31,16 @@ class TomorrowIOTimelineData(BaseModel):
 
 
 class TomorrowIOWeatherData(BaseModel):
-    values: TomorrowIOTimelineData
-    start_time: datetime_cls = Field(alias='startTime') # example val: 2024-05-21 15:00:00+00:00
+    start_time: datetime_cls = Field(alias='startTime')  # example val: 2024-05-21 15:00:00+00:00
+    latitude: float
+    longitude: float
     data_load_date: datetime_cls = Field(default_factory=lambda: datetime_cls.now(datetime.UTC))
+    values: TomorrowIOTimelineData
 
+
+def unload_model_to_tuple(weather_data: TomorrowIOWeatherData) -> tuple:
+    weather_data_json = weather_data.model_dump()
+    metadata_tuple = tuple(weather_data_json.values())[:4]
+    timeline_tuple = tuple(tuple(weather_data_json.values())[4].values())
+    joined_tuple = tuple(itertools.chain(metadata_tuple, timeline_tuple))
+    return joined_tuple

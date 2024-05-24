@@ -4,8 +4,6 @@ For more info on this endpoint, see the docs --> https://docs.tomorrow.io/refere
 """
 
 import requests
-import pandas as pd
-import requests
 from requests.exceptions import HTTPError, RequestException
 import time
 import datetime
@@ -22,8 +20,11 @@ class TomorrowIOClient:
         self._session = requests.Session()
         self.logger = logger.get_logger()
 
-    def get_weather_data(self) -> list:
-        """TODO"""
+    def get_weather_data(self) -> list[TomorrowIOWeatherData]:
+        """
+        Public-facing orchestrator function that gets weather data and validates it
+        :return: list of validated weather data
+        """
         timesteps = ["1h"]
         fields = ["temperature",
                   "humidity",
@@ -42,22 +43,22 @@ class TomorrowIOClient:
 
         locations = [
             ["42.3453", "-71.0514"],
-            #TODO ["25.8600","-97.4200"],
-            #TODO["25.9000", "-97.5200"],
-            #TODO["25.9000", "-97.4800"],
-            #TODO["25.9000", "-97.4400"],
-            #TODO["25.9000", "-97.4000"],
-            #TODO["25.9200", "-97.3800"],
-            #TODO["25.9400", "-97.5400"],
-            #TODO["25.9400", "-97.5200"],
-            #TODO["25.9400", "-97.4800"],
-            #TODO["25.9400", "-97.4400"]
+            ["25.8600","-97.4200"],
+            ["25.9000", "-97.5200"],
+            ["25.9000", "-97.4800"],
+            ["25.9000", "-97.4400"],
+            ["25.9000", "-97.4000"],
+            ["25.9200", "-97.3800"],
+            ["25.9400", "-97.5400"],
+            ["25.9400", "-97.5200"],
+            ["25.9400", "-97.4800"],
+            ["25.9400", "-97.4400"]
         ]
 
+        self.logger.info("Sending requests to tomorrow.io")
         raw_data = self._get_data_and_format(timesteps, fields, start_time, end_time, locations)
+        self.logger.info("Validating responses from tomorrow.io")
         validated_data = self._parse_and_validate_data(raw_data)
-        self.logger.debug(validated_data)
-
         return validated_data
 
     def _get_data_and_format(self, timesteps: list, fields: list, start_time: str, end_time: str, locations: list) -> list:
@@ -102,8 +103,12 @@ class TomorrowIOClient:
                 self.logger.error(e)
                 continue
             else:
-                historical_weather_json = response.json()
-                historical_weather_list.append(historical_weather_json['data']['timelines'][0]['intervals'])
+                weather_intervals = response.json()['data']['timelines'][0]['intervals']
+                # TODO: evaluate scalability of this iteration
+                for interval in weather_intervals:
+                    interval["latitude"] = location[0]
+                    interval["longitude"] = location[1]
+                historical_weather_list.append(weather_intervals)
             finally:
                 time.sleep(0.5) # tomorrow.io's free plan rate limits at >3 TPS
 
