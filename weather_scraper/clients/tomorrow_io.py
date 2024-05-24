@@ -85,7 +85,6 @@ class TomorrowIOClient:
                 "startTime": start_time,
                 "endTime": end_time,
             }
-            print(payload)
 
             try:
                 response = self._session.post(url, json=payload, headers=headers)
@@ -106,7 +105,6 @@ class TomorrowIOClient:
                 for interval in weather_intervals:
                     interval["latitude"] = location[0]
                     interval["longitude"] = location[1]
-                print(weather_intervals[0])
                 historical_weather_list.append(weather_intervals)
             finally:
                 time.sleep(0.5) # tomorrow.io's free plan rate limits at >3 TPS
