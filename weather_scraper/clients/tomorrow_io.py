@@ -16,55 +16,29 @@ API_KEY = os.environ['TOMORROW_API_KEY']
 
 
 class TomorrowIOClient:
-    def __init__(self):
+    def __init__(self, timesteps: list, fields: list, start_time: str, end_time: str, locations: list[list]):
         self._session = requests.Session()
         self.logger = logger.get_logger()
+        self.timesteps = timesteps
+        self.fields = fields
+        self.start_time = start_time
+        self.end_time = end_time
+        self.locations = locations
 
     def get_weather_data(self) -> list[TomorrowIOWeatherData]:
         """
         Public-facing orchestrator function that gets weather data and validates it
         :return: list of validated weather data
         """
-        timesteps = ["1h"]
-        fields = ["temperature",
-                  "humidity",
-                  "temperatureApparent",
-                  "dewPoint",
-                  "humidity",
-                  "windSpeed",
-                  "windDirection",
-                  "windGust",
-                  "precipitationIntensity",
-                  "precipitationProbability",
-                  "precipitationType",
-                  "uvIndex"]
-        start_time = "nowMinus1d"
-        end_time = "nowPlus5d"
 
-        locations = [
-            ["25.8600","-97.4200"],
-            ["25.9000", "-97.5200"],
-            ["25.9000", "-97.4800"],
-            ["25.9000", "-97.4400"],
-            ["25.9000", "-97.4000"],
-            ["25.9200", "-97.3800"],
-            ["25.9400", "-97.5400"],
-            ["25.9400", "-97.5200"],
-            ["25.9400", "-97.4800"],
-            ["25.9400", "-97.4400"]
-        ]
-
-        raw_data = self._get_data_and_format(timesteps, fields, start_time, end_time, locations)
+        raw_data = self._get_data_and_format()
         validated_data = self._parse_and_validate_data(raw_data)
         return validated_data
 
-    def _get_data_and_format(self, timesteps: list, fields: list, start_time: str, end_time: str, locations: list) -> list:
+    def _get_data_and_format(self) -> list:
         '''
-        :param timesteps: API param -- 1s, 1m, 1h, 1d
-        :param fields: API param -- list of requested weather data fields
-        :param start_time: API param -- start of timestep increment
-        :param end_time: API param -- end of timestep increment
-        :param locations: API param -- list of latitude, longitude
+        Sends an POST request to tomorrow.io Timeline API and
+        correlates location data with
         :return: list of responses from tomorrow.io Timeline API
         '''
 
@@ -77,13 +51,13 @@ class TomorrowIOClient:
 
         historical_weather_list = []
 
-        for location in locations:
+        for location in self.locations:
             payload = {
                 "location": ','.join(location),
-                "fields": fields,
-                "timesteps": timesteps,
-                "startTime": start_time,
-                "endTime": end_time,
+                "fields": self.fields,
+                "timesteps": self.timesteps,
+                "startTime": self.start_time,
+                "endTime": self.end_time,
             }
 
             try:
