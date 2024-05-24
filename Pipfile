@@ -7,6 +7,7 @@ name = "pypi"
 requests = "*"
 jupyter = "*"
 pydantic = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "*"
